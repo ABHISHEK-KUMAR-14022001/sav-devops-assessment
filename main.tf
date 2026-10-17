@@ -240,13 +240,13 @@ resource "aws_lb_listener" "http" {
   tags = local.common_tags
 }
 
-# ECS service with two Fargate tasks in the two public subnets
+# ECS service with two Fargate tasks
 resource "aws_ecs_service" "web" {
-  name            = "${var.name_prefix}-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.web.arn
-  desired_count   = 2
-  launch_type     = "FARGATE"
+  name                  = "${var.name_prefix}-service"
+  cluster               = aws_ecs_cluster.main.id
+  task_definition       = aws_ecs_task_definition.web.arn
+  desired_count         = 2
+  launch_type           = "FARGATE"
   wait_for_steady_state = true
 
   network_configuration {
@@ -261,12 +261,7 @@ resource "aws_ecs_service" "web" {
     container_port   = 80
   }
 
-  # Encourage one replica per Availability Zone.
-  # Always verify the actual task placement after deployment.
-  ordered_placement_strategy {
-    type  = "spread"
-    field = "attribute:ecs.availability-zone"
-  }
+  # Placement strategies are not supported with Fargate.
 
   depends_on = [
     aws_lb_listener.http,

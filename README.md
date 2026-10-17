@@ -4,6 +4,10 @@ This repository implements the Sav DevOps practical assessment. It provisions a 
 
 > **Cost warning:** Create a USD 5 AWS Budget alert before deployment. A budget alert does not stop spending. The ALB, Fargate tasks, public IPv4 addresses, and related usage can incur charges. Save all evidence and destroy the stack on the same day. The assessment's approximately USD 1 target is an estimate, not a guaranteed maximum.
 
+I have configured the AWS monthly budget with actual-cost alerts at $1, $3, and $5. I have attached a screenshot of the budget configuration for reference.
+
+The AWS account already has approximately $0.70 in actual costs, with a forecasted monthly cost of around $1.07. I wanted to mention this before deploying the assessment resources.
+
 ## 1. Architecture
 
 ```text
@@ -22,6 +26,7 @@ Target group (IP targets, HTTP health check /)
 ECS Fargate task 1              ECS Fargate task 2
 Public subnet 1 / AZ A          Public subnet 2 / AZ B
 Nginx container :80             Nginx container :80
+
 Task SG: inbound TCP/80 only from ALB SG
 ```
 
