@@ -156,7 +156,7 @@ curl -sS -D - -o /dev/null "http://${ALB_DNS}/" \
 Expected: an HTTP `200 OK` response. Paste the actual output here:
 
 
-![ALB returns HTTP 200](/public/images/image.png)
+![ALB returns HTTP 200](/public/images/image-alb-dns-response.png)
 
 
 ### Proof 2 — Task SG only allows HTTP from the ALB SG
@@ -174,9 +174,7 @@ aws ec2 describe-security-groups \
 
 Verify that TCP/80 references the ALB security group and that there is no public inbound rule on the task security group.
 
-```text
-[PASTE OR SUMMARIZE THE ACTUAL RULE OUTPUT]
-```
+![security group](/public/images/image-sg.png)
 
 ### Proof 3 — Direct task public IP fails
 
@@ -190,9 +188,9 @@ curl --connect-timeout 5 --max-time 8 -v \
 
 Expected: a timeout or connection refused because the task security group does not allow inbound HTTP from the test machine. Paste the actual output here:
 
-```text
-[PASTE ACTUAL CURL OUTPUT AND EXIT CODE]
-```
+![public IP](/public/images/public-ip.png)
+
+![public IP fails](/evidence/task-1-direct-access-test.txt)
 
 Do not claim a test passed unless you ran it and captured the result.
 
