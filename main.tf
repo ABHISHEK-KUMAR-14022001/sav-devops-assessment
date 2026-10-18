@@ -261,8 +261,6 @@ resource "aws_ecs_service" "web" {
     container_port   = 80
   }
 
-  # Placement strategies are not supported with Fargate.
-
   depends_on = [
     aws_lb_listener.http,
     aws_route_table_association.public,
