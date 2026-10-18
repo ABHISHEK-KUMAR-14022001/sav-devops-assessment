@@ -204,7 +204,7 @@ curl exit code: 28
 
 ## 8. Screenshots
 
-Saveed relevant AWS Console screenshots under `screenshots/`:
+Saved relevant AWS Console screenshots under `screenshots/`:
 
 - AWS VPC showing CIDR 10.20.0.0/16
 - Both subnets with their different Availability Zones
