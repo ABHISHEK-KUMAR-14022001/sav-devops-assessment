@@ -1,8 +1,6 @@
 # Secure Web Service on AWS — Terraform
 
-This repository implements the Sav DevOps practical assessment. It provisions a small Nginx website on Amazon ECS Fargate behind an internet-facing Application Load Balancer (ALB).
-
-> **Cost warning:** Create a USD 5 AWS Budget alert before deployment. A budget alert does not stop spending. The ALB, Fargate tasks, public IPv4 addresses, and related usage can incur charges. Save all evidence and destroy the stack on the same day. The assessment's approximately USD 1 target is an estimate, not a guaranteed maximum.
+This repository contains my solution for the Sav DevOps practical assessment. It uses Terraform to deploy a simple Nginx website on Amazon ECS Fargate and makes it accessible through an internet-facing Application Load Balancer (ALB).
 
 I have configured the AWS monthly budget with actual-cost alerts at $1, $3, and $5. I have attached a screenshot of the budget configuration for reference.
 
@@ -30,7 +28,7 @@ Nginx container :80             Nginx container :80
 Task SG: inbound TCP/80 only from ALB SG
 ```
 
-The site URL is the ALB DNS name. Although the tasks have public IPv4 addresses so they can pull the public Nginx image through the internet gateway, the task security group does not allow direct inbound HTTP from the internet.
+The website can be accessed using the ALB URL. The ECS tasks have public IP addresses so they can download the Nginx image from the internet. However, users cannot access the tasks directly because the security group only allows traffic from the ALB.
 
 ## 2. Resources and required settings
 
@@ -104,7 +102,7 @@ aws ecs describe-services \
   --query 'services[0].{Desired:desiredCount,Running:runningCount,Pending:pendingCount}'
 ```
 
-Expected: desired count `2`, running count `2`, pending count `0`.
+![ecs service](/public/images/ecs-service.png)
 
 ### Target group health
 
@@ -121,7 +119,7 @@ aws elbv2 describe-target-health \
   --query 'TargetHealthDescriptions[].{IP:Target.Id,Port:Target.Port,Health:TargetHealth.State}'
 ```
 
-Both targets should be `healthy`.
+![target group](/public/images/target-group.png)
 
 ### Confirm task placement
 
@@ -141,9 +139,11 @@ aws ecs describe-tasks \
   --query 'tasks[].{Task:taskArn,AZ:availabilityZone,Status:lastStatus,ENI:attachments[0].details[?name==`networkInterfaceId`].value|[0]}'
 ```
 
+![subnets/AZs](/public/images/zones-enis.png)
+
 ## 7. Required proof evidence
 
-Create an `evidence/` directory and save the actual command output. Do not leave the placeholders below in the submitted README.
+Created a folder named evidence/ and saved the command outputs in it.
 
 ### Proof 1 — ALB returns HTTP 200
 
@@ -152,8 +152,6 @@ ALB_DNS=$(terraform output -raw alb_dns_name)
 curl -sS -D - -o /dev/null "http://${ALB_DNS}/" \
   | tee evidence/alb-curl.txt
 ```
-
-Expected: an HTTP `200 OK` response. Paste the actual output here:
 
 
 ![ALB returns HTTP 200](/public/images/image-alb-dns-response.png)
@@ -172,21 +170,17 @@ aws ec2 describe-security-groups \
   | tee evidence/task-security-group.json
 ```
 
-Verify that TCP/80 references the ALB security group and that there is no public inbound rule on the task security group.
-
 ![security group](/public/images/image-sg.png)
 
 ### Proof 3 — Direct task public IP fails
 
-Find the task ENIs and public IPs in the ECS/EC2 console or with the AWS CLI. Run the test from a machine outside the VPC, replacing the placeholder with an actual task public IP:
+the task ENIs and public IPs in the AWS CLI. Run the test from a machine outside the VPC, replacing the placeholder with an actual task public IP:
 
 ```bash
 curl --connect-timeout 5 --max-time 8 -v \
   "http://TASK_PUBLIC_IP/" \
-  > evidence/direct-task-curl.txt 2>&1
+  > evidence/task-1-direct-access-test.txt 2>&1
 ```
-
-Expected: a timeout or connection refused because the task security group does not allow inbound HTTP from the test machine. Paste the actual output here:
 
 ![public IP](/public/images/public-ip.png)
 
@@ -208,11 +202,9 @@ curl: (28) Failed to connect to 13.233.140.171 port 80 after 5001 ms: Timeout wa
 curl exit code: 28
 ```
 
-Do not claim a test passed unless you ran it and captured the result.
-
 ## 8. Screenshots
 
-Save relevant AWS Console screenshots under `screenshots/`:
+Saveed relevant AWS Console screenshots under `screenshots/`:
 
 - AWS VPC showing CIDR 10.20.0.0/16
 - Both subnets with their different Availability Zones
@@ -223,7 +215,6 @@ Save relevant AWS Console screenshots under `screenshots/`:
 - Nginx welcome page opened through the ALB DNS name
 - CloudWatch log group/log streams
 
-Do not include credentials, access keys, or other secrets in screenshots.
 
 ## 9. Design notes
 
@@ -252,33 +243,4 @@ The ALB spans two Availability Zones and can route to healthy targets in the sur
 - **Autoscaling:** Configure ECS Service Auto Scaling using CPU or memory metrics with sensible minimum/maximum task counts and cooldowns.
 - **Pipeline:** Run formatting, validation, security checks, and a Terraform plan in CI. Require review/approval before apply, use short-lived credentials (such as OIDC role assumption), store state remotely with locking, and use immutable image versions/digests with a rollback strategy.
 
-## 10. Teardown and cost verification
 
-After saving the required command output and screenshots, destroy the stack on the same day:
-
-```bash
-terraform destroy
-```
-
-Review the proposed deletions and confirm. Then check the AWS Console to ensure that the ECS service/tasks, ALB, target group, security groups, subnets, VPC, and other resources managed by this Terraform configuration have been removed.
-
-Record the actual result below after teardown:
-
-- Destroy completed: **[YES/NO — fill in after running]**
-- Date/time: **[FILL IN ACTUAL DATE/TIME]**
-- Remaining assessment resources: **[FILL IN AFTER VERIFICATION]**
-- Actual cost observed: **[FILL IN FROM AWS BILLING WHEN AVAILABLE]**
-
-A budget alert is not a spending cap. Verify that billable resources were removed and check billing for any remaining charges.
-
-## 11. Repository submission
-
-Push the Terraform files, `.terraform.lock.hcl`, README, evidence, and screenshots to a Git repository you own. Do not commit `.terraform/`, Terraform state files, plans, credentials, or secrets.
-
-```bash
-git add main.tf variables.tf versions.tf outputs.tf .terraform.lock.hcl README.md evidence/ screenshots/
-git commit -m "Complete secure AWS ECS Fargate assessment"
-git push
-```
-
-Submit the repository URL when the assessment deadline arrives.
