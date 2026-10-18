@@ -156,7 +156,7 @@ curl -sS -D - -o /dev/null "http://${ALB_DNS}/" \
 Expected: an HTTP `200 OK` response. Paste the actual output here:
 
 ```text
-![image.png](image-1.png)
+![ALB returns HTTP 200](/public/images/image.png)
 ```
 
 ### Proof 2 — Task SG only allows HTTP from the ALB SG
