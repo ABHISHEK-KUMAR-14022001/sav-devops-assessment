@@ -190,7 +190,23 @@ Expected: a timeout or connection refused because the task security group does n
 
 ![public IP](/public/images/public-ip.png)
 
-![public IP fails](/evidence/task-1-direct-access-test.txt)
+```text
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 13.233.140.171:80...
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:04 --:--:--     0* ipv4 connect timeout after 5000ms, move on!
+* Failed to connect to 13.233.140.171 port 80 after 5001 ms: Timeout was reached
+
+  0     0    0     0    0     0      0      0 --:--:--  0:00:05 --:--:--     0
+* Closing connection
+curl: (28) Failed to connect to 13.233.140.171 port 80 after 5001 ms: Timeout was reached
+curl exit code: 28
+```
 
 Do not claim a test passed unless you ran it and captured the result.
 
@@ -198,7 +214,8 @@ Do not claim a test passed unless you ran it and captured the result.
 
 Save relevant AWS Console screenshots under `screenshots/`:
 
-- VPC and both subnets with CIDRs and AZs
+- AWS VPC showing CIDR 10.20.0.0/16
+- Both subnets with their different Availability Zones
 - ALB security group inbound rule
 - Task security group inbound rule referencing the ALB security group
 - ECS service with two running tasks
