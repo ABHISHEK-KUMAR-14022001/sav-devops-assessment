@@ -1,0 +1,9 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 13.233.140.171:80...
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:04 --:--:--     0* ipv4 connect timeout after 5000ms, move on!
+* Failed to connect to 13.233.140.171 port 80 after 5001 ms: Timeout was reached
+  0     0    0     0    0     0      0      0 --:--:--  0:00:05 --:--:--     0
+* Closing connection
+curl: (28) Failed to connect to 13.233.140.171 port 80 after 5001 ms: Timeout was reached
+curl exit code: 28

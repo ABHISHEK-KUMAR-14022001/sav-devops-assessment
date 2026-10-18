@@ -1,0 +1,17 @@
+[
+    {
+        "IpProtocol": "tcp",
+        "FromPort": 80,
+        "ToPort": 80,
+        "UserIdGroupPairs": [
+            {
+                "Description": "HTTP from the ALB security group only",
+                "UserId": "653240455183",
+                "GroupId": "sg-0b23c06bacef1cf89"
+            }
+        ],
+        "IpRanges": [],
+        "Ipv6Ranges": [],
+        "PrefixListIds": []
+    }
+]
